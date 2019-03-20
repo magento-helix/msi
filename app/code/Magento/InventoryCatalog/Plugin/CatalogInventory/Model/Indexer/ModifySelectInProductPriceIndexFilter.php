@@ -89,12 +89,12 @@ class ModifySelectInProductPriceIndexFilter
                     ['product_entity' => $this->resourceConnection->getTableName('catalog_product_entity')],
                     "product_entity.entity_id = price_index.{$priceEntityField}",
                     []
-                )->joinLeft(
-                    ['inventory_stock' => $stockTable],
-                    'inventory_stock.sku = product_entity.sku',
+                )->joinInner(
+                    ['legacy_stock_status' => $this->resourceConnection->getTableName('cataloginventory_stock_status')],
+                    'legacy_stock_status.product_id = product_entity.entity_id',
                     []
                 );
-                $select->where('inventory_stock.is_salable = 0 OR inventory_stock.is_salable IS NULL');
+                $select->where('legacy_stock_status.is_salable = 0 OR legacy_stock_status.is_salable IS NULL');
             }
 
             $select->where('price_index.website_id = ?', $websiteId);
